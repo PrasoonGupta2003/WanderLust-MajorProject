@@ -1,3 +1,6 @@
+if(process.env.NODE_ENV !== "production"){
+    require("dotenv").config();
+}
 const express=require("express");
 const app= express();
 const mongoose=require("mongoose");
@@ -8,6 +11,7 @@ const userRouter=require("./routes/user.js");
 const ejsMate=require("ejs-mate");
 const ExpressError=require("./utils/ExpressError");
 const session=require("express-session");
+const MongoStore=require("connect-mongo");
 const flash=require("connect-flash");
 const passport=require("passport");
 const LocalStrategy=require("passport-local");
@@ -29,17 +33,32 @@ app.listen(8080, function(){
     console.log("App is listening on port 8080");
 })
 
-const Mongo_URL="mongodb://127.0.0.1:27017/wanderlust"
-async function main(){
-    await mongoose.connect(Mongo_URL);
+//const Mongo_URL="mongodb://127.0.0.1:27017/wanderlust"
+const dbUrl=process.env.ATLASDB_URL;
+
+async function main() {
+    await mongoose.connect(dbUrl);
 }
+
 main().then(()=>{
     console.log("Connected to Mongo");
 })
 .catch((err) => console.log(err));
 
+const store=MongoStore.create({
+    mongoUrl: dbUrl,
+    crypto:{
+        secret: process.env.SECRET,
+    },
+    touchAfter: 24*3600,
+})
+
+store.on("error", (err)=>{
+    console.log("ERROR in Mongo Session store",err);
+})
 const sessionOptions={
-    secret: "mysupersecretcode",
+    store:store,
+    secret: process.env.SECRET,
     resave: false,
     saveUninitialized: true,
     cookie:{
@@ -49,9 +68,9 @@ const sessionOptions={
     }
 }
 
-app.get("/", (req, res)=>{
-    res.send("Hi! I am root");
-})
+app.get("/", (req, res) => {
+    res.render("listings/home");
+});
 
 app.use(session(sessionOptions));
 app.use(flash());
@@ -68,7 +87,7 @@ app.use((req,res,next)=>{
     res.locals.currUser=req.user;
     next(); 
 }) 
-
+  
 app.use("/listings",listingRouter);
 app.use("/listings/:id/reviews",reviewRouter);
 app.use("/",userRouter);

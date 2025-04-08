@@ -11,10 +11,28 @@ body{
     height: 5rem;
     background-color: white;
 }
+#logo{
+    background-color: #fe424d;
+    padding: 1rem 2rem;
+    text-align: center;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-decoration: none;
+    border-radius: 50px;
+}
+#logo:hover {
+    color: #fe424d;
+    background-color: #ebebeb;
+    border: 2px solid #000000;           
+    border-radius: 50px;
+  }
+  
 .fa-compass{
     color: #fe424d;
     font-size: 2rem;
-}
+} 
 .nav-link{
     color: #222222 !important;
 }

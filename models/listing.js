@@ -9,12 +9,8 @@ const listingSchema=new Schema({
     }, 
     description: String,
     image: {
-        type: String,
-        default:
-            "https://unsplash.com/photos/canalside-houses-and-boat-in-amsterdam-qNFktabs9R4",
-        set:(v)=>
-            v==="" ? "https://unsplash.com/photos/canalside-houses-and-boat-in-amsterdam-qNFktabs9R4"
-                   :  v,
+        url:String,
+        filename:String,
     },
     price:Number,
     location:String,
